@@ -35,6 +35,28 @@ lumkani_payment_reporting/
 
 ---
 
+## ⚙️ Setup Instructions
+
+### ✅ 1. Clone  the project
+
+Unzip the folder or clone your GitHub repo into your local workspace.
+
+### ✅ 2. Create and activate a virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate    # On macOS/Linux
+venv\Scripts\activate       # On Windows
+```
+
+### ✅ 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
 ## 🚀 How to Run the Tool
 
 ### ✅ Basic Command:
