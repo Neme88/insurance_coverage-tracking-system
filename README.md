@@ -144,6 +144,6 @@ pytest==8.1.1
 
 ## 👨🏾‍💻 Author
 
-**Chinemerem [Your Last Name]**  
+**Chinemerem Nwaka **  
 Lumkani Technical Assessment Submission  
 April 2025
