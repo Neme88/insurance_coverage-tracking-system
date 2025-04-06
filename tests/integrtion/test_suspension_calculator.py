@@ -1,10 +1,13 @@
 import pandas as pd
-from datetime import datetime
-import tempfile
 import os
+import tempfile
+from datetime import datetime
 from src.suspension_calculator import generate_days_from_suspension_report
 
 def test_generate_days_from_suspension_report():
+    """
+    Integration test: validate that the suspension report CSV is created and contains expected columns.
+    """
     df = pd.DataFrame({
         'device_id': [1, 1, 2],
         'created': pd.to_datetime(['2024-01-01', '2024-02-01', '2024-01-15']),
