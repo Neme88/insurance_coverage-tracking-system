@@ -10,8 +10,16 @@ from src.payment_type_report_generator import generate_payment_type_report
 
 def main():
     parser = argparse.ArgumentParser(description="Lumkani Payment Report Generator")
+
     parser.add_argument("input_file", help="Path to the input CSV file (e.g. 2024_09_10_payments.csv)")
     parser.add_argument("output_folder", help="Path to the output folder (must not exist)")
+
+    parser.add_argument(
+        "--date",
+        help="Optional override for today's date in YYYY-MM-DD format (default: system date)",
+        required=False
+    )
+
     args = parser.parse_args()
 
     if not os.path.exists(args.input_file):
@@ -24,9 +32,17 @@ def main():
 
     os.makedirs(args.output_folder)
 
-    payments_df = load_payments(args.input_file)
-    today = datetime.today().date()
+    # Determine "today" for calculations
+    try:
+        today = datetime.strptime(args.date, "%Y-%m-%d").date() if args.date else datetime.today().date()
+    except ValueError:
+        print("Error: --date must be in format YYYY-MM-DD (e.g., 2024-10-01)")
+        sys.exit(1)
 
+    # Load and clean data
+    payments_df = load_payments(args.input_file)
+
+    # Generate reports
     generate_days_from_suspension_report(payments_df, args.output_folder, today)
     generate_agent_collection_report(payments_df, args.output_folder)
     generate_payment_type_report(payments_df, args.output_folder)
@@ -34,4 +50,8 @@ def main():
     print(f"Reports generated successfully in folder: {args.output_folder}")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nOperation cancelled by user.")
+
