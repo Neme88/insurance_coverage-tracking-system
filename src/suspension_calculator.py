@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from datetime import timedelta
 
 def generate_days_from_suspension_report(df, output_folder, today):
@@ -26,4 +27,4 @@ def generate_days_from_suspension_report(df, output_folder, today):
 
     result_df = pd.DataFrame(device_days, columns=['device_id', 'days_from_suspension'])
     result_df = result_df.sort_values(by='days_from_suspension', ascending=False)
-    result_df.to_csv(f"{output_folder}/days_from_suspension_report.csv", index=False)
+    result_df.to_csv(os.path.join(output_folder, "days_from_suspension_report.csv"), index=False)
