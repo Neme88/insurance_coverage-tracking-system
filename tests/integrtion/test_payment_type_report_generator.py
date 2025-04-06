@@ -1,9 +1,12 @@
 import pandas as pd
-import tempfile
 import os
+import tempfile
 from src.payment_type_report_generator import generate_payment_type_report
 
 def test_generate_payment_type_report():
+    """
+    Integration test: validate that payment type report is created and properly grouped.
+    """
     df = pd.DataFrame({
         'device_id': [1, 2],
         'created': pd.to_datetime(['2024-01-01', '2024-01-01']),
