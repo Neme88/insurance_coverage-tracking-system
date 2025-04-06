@@ -3,6 +3,17 @@ import os
 from datetime import timedelta
 
 def generate_days_from_suspension_report(df, output_folder, today):
+    """
+    Generate a report of days remaining until suspension for each device.
+
+    Coverage period: 30 days per payment.
+    Suspension occurs on the 91st day after the last covered date.
+
+    Args:
+        df (pd.DataFrame): Preprocessed payment data.
+        output_folder (str): Directory to write the output CSV.
+        today (datetime.date): Reference date for calculating days remaining.
+    """
     device_days = []
 
     for device_id, group in df.groupby('device_id'):
@@ -15,6 +26,7 @@ def generate_days_from_suspension_report(df, output_folder, today):
                 coverage_start = payment_date
             else:
                 coverage_start = coverage_end + timedelta(days=1)
+
             coverage_end = coverage_start + timedelta(days=29)
 
         if coverage_end is None:
