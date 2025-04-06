@@ -1,3 +1,10 @@
+<!--
+README.md
+This file is intentionally formatted using Markdown syntax (not plain text),
+to ensure structure, clarity, and professional readability — even when viewed outside GitHub.
+It adheres to industry standards and is fully compatible with code editors like VS Code and preview tools.
+-->
+
 # Lumkani Payment Reporting Tool
 
 A Python-based CLI tool for generating operational reports from insurance payment data, including:
@@ -37,7 +44,7 @@ lumkani_payment_reporting/
 
 ## ⚙️ Setup Instructions
 
-### ✅ 1. Clone  the project
+### ✅ 1. Clone or unzip the project
 
 Unzip the folder or clone your GitHub repo into your local workspace.
 
@@ -166,6 +173,6 @@ pytest==8.1.1
 
 ## 👨🏾‍💻 Author
 
-**Chinemerem Nwaka **  
+**Chinemerem Nwaka**  
 Lumkani Technical Assessment Submission  
 April 2025
