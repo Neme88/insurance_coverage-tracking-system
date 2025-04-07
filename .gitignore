@@ -177,3 +177,6 @@ cython_debug/
 .DS_Store
 2024_09_10_payments.csv
 
+# outputs directory 
+output_reports/
+
