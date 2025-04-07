@@ -7,53 +7,58 @@ It adheres to industry standards and is fully compatible with code editors like 
 
 # Lumkani Payment Reporting Tool
 
-A Python-based CLI tool for generating operational reports from insurance payment data, including:
+A Python-based command-line tool for generating actionable reports from raw payment data. This solution addresses Lumkani’s technical assessment requirements with a focus on **clarity**, **clean architecture**, and **testability**.
 
-- Days remaining until client suspension
-- Agent payment collections
-- Payment type summaries
+---
 
-This solution is built for Lumkani's technical assessment and adheres to clean code, testability, and architectural best practices.
+## 🚀 What It Does
+
+Given a CSV of successful and failed payment transactions, this tool produces:
+
+1. **Suspension report**: Shows how many days remain before each client is suspended.
+2. **Agent collection report**: Aggregates collections by agent per day.
+3. **Payment type summary**: Shows total amount collected by payment method.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-lumkani_payment_reporting/
+lumkani_payment_report/
 ├── src/
-│   ├── main.py
-│   ├── data_loader.py
-│   ├── suspension_calculator.py
-│   ├── agent_report_generator.py
-│   └── payment_type_report_generator.py
+│   ├── main.py                             # CLI entry point
+│   ├── data_loader.py                      # Preprocess input CSV
+│   ├── suspension_calculator.py            # Report logic
+│   ├── agent_report_generator.py           # Report logic
+│   └── payment_type_report_generator.py    # Report logic
 ├── tests/
-│   ├── unit/
-│   │   ├── test_suspension_calculator.py
-│   │   ├── test_agent_report_generator.py
-│   │   └── test_payment_type_report_generator.py
-│   └── integration/
-│       ├── test_suspension_calculator.py
-│       ├── test_agent_report_generator.py
-│       └── test_payment_type_report_generator.py
-├── requirements.txt
+│   ├── unit/                               # Unit tests (logic only)
+│   └── integration/                        # Full pipeline + file output
+├── 2024_09_10_payments.csv                 # Sample CSV provided by Lumkani
+├── requirements.txt                        # Project dependencies
+├── Makefile                                # For `make run` and `make test`
+├── setup.py                                # Editable install support
+├── .gitignore
 └── README.md
 ```
 
 ---
 
-## ⚙️ Setup Instructions
+## ⚙️ Environment Setup (1-Minute Guide)
 
-### ✅ 1. Clone or unzip the project
+### ✅ 1.unzip locally
 
-Unzip the folder or clone your GitHub repo into your local workspace.
+```bash
+cd ~/Desktop
+cd lumkani_payment_report
+```
 
 ### ✅ 2. Create and activate a virtual environment
 
 ```bash
-python -m venv venv
-source venv/bin/activate    # On macOS/Linux
-venv\Scripts\activate       # On Windows
+python3 -m venv venv
+source venv/bin/activate          # macOS/Linux
+venv\Scripts\activate             # Windows
 ```
 
 ### ✅ 3. Install dependencies
@@ -64,115 +69,115 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 How to Run the Tool
+## 🧪 Run the Tool
 
-### ✅ Basic Command:
-
-```bash
-python src/main.py <input_csv_file> <output_directory>
-```
-
-### ✅ Optional Date Override:
+### ✅ CLI usage:
 
 ```bash
-python src/main.py data/2024_09_10_payments.csv output/ --date 2024-10-01
+python src/main.py <input_csv> <output_folder> [--date YYYY-MM-DD]
 ```
 
-- `input_csv_file`: Path to the provided payment CSV.
-- `output_directory`: A non-existing folder where reports will be written.
-- `--date`: (Optional) Date to simulate "today" in `YYYY-MM-DD` format.
-
----
-
-## 📝 Output Reports
-
-1. **days_from_suspension_report.csv**  
-   Columns: `device_id`, `days_from_suspension`
-
-2. **agent_collection_report.csv**  
-   Columns: `agent_user_id`, `date`, `payment_type`, `payment_amount`
-
-3. **payment_type_report.csv**  
-   Columns: `payment_type`, `total_amount`
-
----
-
-## ✅ Data Assumptions & Rules
-
-- Only `SUCCESSFUL` payments are considered.
-- Each payment grants 30 days of coverage.
-- Suspension occurs **on the 91st day** after the last covered date.
-- Failed or malformed rows are ignored with validation.
-- Aggregations are case-insensitive and time-zone agnostic.
-
----
-
-## 🧪 Running Tests
-
-This project uses **pytest** for unit and integration testing.
-
-### ✅ To run all tests:
+### Example:
 
 ```bash
-pytest
+python src/main.py 2024_09_10_payments.csv output_reports
 ```
 
-### ✅ To run tests by module:
+> The tool creates the output folder and generates 3 CSV files.
+
+---
+
+## 📂 Output Reports
+
+| File                                | Columns                                         |
+|-------------------------------------|-------------------------------------------------|
+| `days_from_suspension_report.csv`  | `device_id`, `days_from_suspension`            |
+| `agent_collection_report.csv`      | `agent_user_id`, `date`, `payment_type`, `payment_amount` |
+| `payment_type_report.csv`          | `payment_type`, `total_amount`                 |
+
+All reports are sorted and validated according to the expected business logic.
+
+---
+
+## ✅ Data Rules (As Interpreted from the Spec)
+
+- Only `SUCCESSFUL` payments are valid.
+- Each successful payment provides **30 days** of coverage.
+- A client is suspended on **day 91** (if no payment extends coverage).
+- Payments with `NaN`/invalid values are dropped silently (gracefully).
+- Reports exclude all failed, malformed, or corrupted data.
+
+---
+
+## 📊 Running Tests
+
+The tool is fully covered by **unit** and **integration** tests.
+
+### ✅ Run all tests with coverage:
 
 ```bash
-pytest tests/unit/
-pytest tests/integration/
+make test
+```
+
+### ✅ Or manually:
+
+```bash
+pytest --cov=src --cov-report=term-missing
+```
+
+> Coverage ≥ 80% (all core logic tested)
+
+---
+
+## 🛠️ Makefile Commands
+
+```makefile
+run:
+	python src/main.py $(INPUT) $(OUTPUT)
+
+test:
+	pytest --cov=src --cov-report=term-missing
+
+lint:
+	flake8 src tests
+```
+
+### ✅ Usage:
+
+```bash
+make run INPUT=2024_09_10_payments.csv OUTPUT=output_reports
+make test
+make lint
 ```
 
 ---
 
-## 🧱 Architecture & Code Design
+## 📦 Requirements
 
-- **Modular**: Each report has a dedicated logic module
-- **Testable**: Pure logic is separated from file I/O
-- **Extendable**: Adding new reports is straightforward
-- **Clean structure**:
-  - `src/` contains all core logic
-  - `tests/unit/` and `tests/integration/` provide full test coverage
-
----
-
-## ✅ Code Quality Standards
-
-This solution follows Python best practices:
-
-- **PEP8 formatting** using `black`
-- **Static analysis** with `flake8` and `mypy`
-- **Clean architecture** principles
-- **Readable, concise docstrings** and minimal inline comments
-- **Tests as documentation**: test names and docstrings clarify behavior
-
----
-
-## 📦 Dependencies
-
-Listed in `requirements.txt`:
-
-```
-pandas==2.2.1
-python-dateutil==2.9.0
-pytest==8.1.1
+```txt
+pandas==2.2.3
+python-dateutil==2.9.0.post0
+pytest==8.3.5
+pytest-cov==6.1.1
+numpy==2.2.4
 ```
 
-> Developer tools like `black`, `flake8`, and `mypy` were used but are not included in `requirements.txt` per submission guidelines.
+> These are the runtime + testing libraries used. Tools like `black`, `flake8` were used during dev but not pinned for the submission.
 
 ---
 
-## 🔐 Binary Artifact Policy
+## 💡 Notes on Submission
 
-- No `.pyc`, `.pyo`, or `__pycache__` files included
-- Virtual environment (`venv/`) is excluded
-- Output CSVs are generated dynamically, not stored
+- All CLI args, naming, and validations align with Lumkani's PDF spec.
+- Input sample file was used in both test coverage and real execution.
+- The pipeline is modular, easily testable, and extensible for future use.
 
 ---
 
 ## 👨🏾‍💻 Author
 
 **Chinemerem Nwaka**  
-Lumkani Technical Assessment Submission  
-April 2025
+Intermediate Full-Stack Python Developer Candidate  
+Submission Date: **April 2025**
+
+> “Built with clarity, modularity, and correctness in mind.”
