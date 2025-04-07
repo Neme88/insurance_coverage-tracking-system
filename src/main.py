@@ -3,13 +3,13 @@ import os
 import sys
 from datetime import datetime
 
-from data_loader import load_payments_csv
+from data_loader import load_payments
 from suspension_calculator import generate_days_from_suspension_report
 from agent_report_generator import generate_agent_collection_report
 from payment_type_report_generator import generate_payment_type_report
 
 
-def run_pipeline(input_csv: str, output_folder: str, date: str = None):
+def run_pipeline(input_csv: str, output_folder: str, date: str = None, strict_folder: bool = True):
     """
     Run the full payment report generation pipeline.
 
@@ -31,11 +31,11 @@ def run_pipeline(input_csv: str, output_folder: str, date: str = None):
         print(f"Error: Input file '{input_csv}' does not exist.")
         sys.exit(1)
 
-    if os.path.exists(output_folder):
+    if os.path.exists(output_folder) and strict_folder:
         print(f"Error: Output folder '{output_folder}' already exists.")
         sys.exit(1)
 
-    os.makedirs(output_folder)
+    os.makedirs(output_folder, exist_ok=True)
 
     try:
         today = datetime.strptime(date, "%Y-%m-%d").date() if date else datetime.today().date()
@@ -43,7 +43,7 @@ def run_pipeline(input_csv: str, output_folder: str, date: str = None):
         print("Error: --date must be in format YYYY-MM-DD (e.g., 2024-10-01)")
         sys.exit(1)
 
-    payments_df = load_payments_csv(input_csv)
+    payments_df = load_payments(input_csv)
 
     generate_days_from_suspension_report(payments_df, output_folder, today)
     generate_agent_collection_report(payments_df, output_folder)

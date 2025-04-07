@@ -1,7 +1,7 @@
 import os
 import tempfile
 import pandas as pd
-from src.main import run_pipeline
+from main import run_pipeline
 
 def test_run_pipeline_creates_expected_csv_outputs():
     """
@@ -20,7 +20,7 @@ def test_run_pipeline_creates_expected_csv_outputs():
         input_path = f.name
 
     with tempfile.TemporaryDirectory() as output_dir:
-        run_pipeline(input_csv=input_path, output_folder=output_dir)
+        run_pipeline(input_csv=input_path, output_folder=output_dir, strict_folder=False)
 
         files = os.listdir(output_dir)
         assert "agent_collection_report.csv" in files

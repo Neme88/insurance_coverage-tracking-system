@@ -1,3 +1,15 @@
-pandas==2.2.1
-python-dateutil==2.9.0
-pytest==8.1.1
+coverage==7.8.0
+exceptiongroup==1.2.2
+iniconfig==2.1.0
+-e git+https://github.com/Neme88/insurance_coverage-tracking-system.git@4c46d7b9e21e513be0845bb3e6db7a476ca94a32#egg=lumkani_reports
+numpy==2.2.4
+packaging==24.2
+pandas==2.2.3
+pluggy==1.5.0
+pytest==8.3.5
+pytest-cov==6.1.1
+python-dateutil==2.9.0.post0
+pytz==2025.2
+six==1.17.0
+tomli==2.2.1
+tzdata==2025.2
