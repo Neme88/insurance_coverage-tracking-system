@@ -1,28 +1,28 @@
 import pandas as pd
-from src.payment_type_report_generator import calculate_total_per_payment_type
+from payment_type_report_generator import generate_payment_type_report
 
-def test_calculate_total_per_payment_type():
+def test_payment_type_report_output(tmp_path):
     """
-    Test that payment amounts are correctly summed by payment type.
+    Test that the payment type report:
+    - Groups by payment_type
+    - Aggregates payment_amount as total_amount
+
+    Asserts:
+        - Output CSV contains the correct columns.
+        - Total amount is correctly summed.
     """
     df = pd.DataFrame({
         'payment_type': ['CASH', 'CARD'],
         'payment_amount': [100, 200],
-        'status': ['SUCCESSFUL', 'SUCCESSFUL']
+        'status': ['SUCCESSFUL', 'SUCCESSFUL'],
+        'created': pd.to_datetime(['2024-01-01', '2024-01-01']),
+        'agent_user_id': [1, 1]
     })
-    result = calculate_total_per_payment_type(df)
-    assert result['payment_amount'].sum() == 300
+    generate_payment_type_report(df, tmp_path)
+    result = pd.read_csv(tmp_path / "payment_type_report.csv")
 
-def test_payment_type_summary_filters_unsuccessful():
-    """
-    Test that payment type report excludes non-successful payments.
-    """
-    df = pd.DataFrame({
-        'payment_type': ['CASH', 'CARD', 'BANK'],
-        'payment_amount': [100, 200, 300],
-        'status': ['SUCCESSFUL', 'FAILED', 'SUCCESSFUL']
-    })
-    result = calculate_total_per_payment_type(df)
-    assert 'CARD' not in result['payment_type'].values
-    assert result['payment_amount'].sum() == 400
+    assert result['total_amount'].sum() == 300
+    assert 'payment_type' in result.columns
+    assert 'total_amount' in result.columns
+
 

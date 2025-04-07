@@ -1,8 +1,10 @@
 import pandas as pd
-import os
 import tempfile
+import os
 from datetime import datetime
-from src.suspension_calculator import generate_days_from_suspension_report
+
+from suspension_calculator import generate_days_from_suspension_report
+
 
 def test_generate_days_from_suspension_report():
     """
@@ -17,9 +19,12 @@ def test_generate_days_from_suspension_report():
         'payment_type': ['CASH', 'CASH', 'CASH']
     })
 
+    today = datetime(2024, 3, 1).date()
+
     with tempfile.TemporaryDirectory() as tmpdirname:
-        today = datetime(2024, 3, 1).date()
         generate_days_from_suspension_report(df, tmpdirname, today)
         result = pd.read_csv(os.path.join(tmpdirname, "days_from_suspension_report.csv"))
+
         assert 'device_id' in result.columns
         assert 'days_from_suspension' in result.columns
+

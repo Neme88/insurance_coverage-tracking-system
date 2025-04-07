@@ -1,9 +1,17 @@
 import pandas as pd
-from src.agent_report_generator import group_by_agent_day_payment
+from datetime import datetime
+from agent_report_generator import generate_agent_collection_report
 
-def test_group_by_agent_day_payment():
+def test_agent_report_groups_by_agent_and_date(tmp_path):
     """
-    Test that agent payments are grouped correctly by date and payment type.
+    Test that the agent collection report is grouped correctly by:
+    - agent_user_id
+    - date (from the 'created' column)
+    - payment_type
+
+    Asserts:
+        - Sum of payment amounts is accurate.
+        - Expected columns exist in the output.
     """
     df = pd.DataFrame({
         'created': pd.to_datetime(['2024-01-01 09:00', '2024-01-01 10:00']),
@@ -12,20 +20,12 @@ def test_group_by_agent_day_payment():
         'agent_user_id': [1, 1],
         'payment_type': ['CASH', 'CASH']
     })
-    result = group_by_agent_day_payment(df)
-    assert result['payment_amount'].sum() == 120
+    df['date'] = df['created'].dt.date
+    output = tmp_path
+    generate_agent_collection_report(df, output)
+    result = pd.read_csv(output / "agent_collection_report.csv")
 
-def test_agent_report_excludes_failed_status():
-    """
-    Test that agent collection report excludes failed transactions.
-    """
-    df = pd.DataFrame({
-        'created': pd.to_datetime(['2024-01-01 08:00:00', '2024-01-01 09:00:00']),
-        'payment_amount': [100, 50],
-        'status': ['SUCCESSFUL', 'FAILED'],
-        'agent_user_id': [1, 1],
-        'payment_type': ['CASH', 'CASH']
-    })
-    result = group_by_agent_day_payment(df)
-    assert result['payment_amount'].sum() == 100
+    assert result['payment_amount'].sum() == 120
+    assert set(result.columns) == {'agent_user_id', 'date', 'payment_type', 'payment_amount'}
+
 

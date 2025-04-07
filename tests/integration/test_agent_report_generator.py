@@ -1,7 +1,9 @@
 import pandas as pd
-import os
 import tempfile
-from src.agent_report_generator import generate_agent_collection_report
+import os
+
+from agent_report_generator import generate_agent_collection_report
+
 
 def test_generate_agent_collection_report():
     """
@@ -19,6 +21,7 @@ def test_generate_agent_collection_report():
     with tempfile.TemporaryDirectory() as tmpdirname:
         generate_agent_collection_report(df, tmpdirname)
         result = pd.read_csv(os.path.join(tmpdirname, "agent_collection_report.csv"))
+
         assert 'agent_user_id' in result.columns
         assert 'date' in result.columns
         assert 'payment_type' in result.columns

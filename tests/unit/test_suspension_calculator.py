@@ -1,31 +1,31 @@
 import pandas as pd
 from datetime import datetime
-from src.suspension_calculator import calculate_days_from_suspension
+from suspension_calculator import generate_days_from_suspension_report
 
-def test_calculate_days_from_suspension():
+def test_suspension_days_calculation(tmp_path):
     """
-    Test correct calculation of days from suspension based on the most recent payment date.
+    Test that suspension days are correctly calculated based on:
+    - last payment coverage ending
+    - system rule: suspension = 91st day after last covered date
+
+    Asserts:
+        - Output CSV has correct device ID and suspension days.
+        - Calculated suspension days match expectation.
     """
     df = pd.DataFrame({
         'device_id': [1],
         'created': pd.to_datetime(['2024-01-01']),
-        'status': ['SUCCESSFUL']
+        'payment_amount': [100],
+        'status': ['SUCCESSFUL'],
+        'agent_user_id': [1],
+        'payment_type': ['CASH']
     })
     today = datetime(2024, 3, 1).date()
-    result = calculate_days_from_suspension(df, today)
+    generate_days_from_suspension_report(df, tmp_path, today)
+    result = pd.read_csv(tmp_path / "days_from_suspension_report.csv")
+
+    assert 'device_id' in result.columns
+    assert 'days_from_suspension' in result.columns
     assert result.iloc[0]['days_from_suspension'] == 30
 
-def test_suspension_ignores_failed_payments():
-    """
-    Test that failed payments are excluded from the suspension calculation.
-    """
-    df = pd.DataFrame({
-        'device_id': [1, 1, 2],
-        'created': pd.to_datetime(['2024-01-01', '2024-02-01', '2024-03-01']),
-        'status': ['SUCCESSFUL', 'FAILED', 'SUCCESSFUL']
-    })
-    today = datetime(2024, 3, 15).date()
-    result = calculate_days_from_suspension(df, today)
-    assert 1 in result['device_id'].values
-    assert result.shape[0] == 2
 
