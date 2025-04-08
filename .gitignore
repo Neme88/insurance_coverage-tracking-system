@@ -179,4 +179,6 @@ cython_debug/
 
 # outputs directory 
 output_reports/
+*.egg-info/
+lumkani_Tech_Assessment_submission.zip
 
